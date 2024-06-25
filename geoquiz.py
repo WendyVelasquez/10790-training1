@@ -3,21 +3,18 @@ import sqlite3
 import tkinter as tk
 from tkinter import PhotoImage
 
-# Conexión a la base de datos
 con = sqlite3.connect("capitais.db")
 cur = con.cursor()
 
-# Configuración de la ventana principal
 janela = tk.Tk()
 janela.title("GeoQuiz")
 janela.geometry("600x550")
 janela.resizable(width=False, height=False)
 
-# Configuración de fuentes
-fonte_title = ("Cascadia Code", 20, "bold")
-fonte_texto = ("Cascadia Code", 13)
+fonte_title = ("Consolas", 22, "bold")
+fonte_perguntas = ("Consolas", 18, "bold")
+fonte_texto = ("Consolas", 14, "bold")
 
-# Variables globales
 nome = ""
 nroPerguntas = 0
 pontos_totais = 0
@@ -27,40 +24,28 @@ capital_correta = ""
 paises_ja_perguntados = []
 continente_selecionado = ""
 
-# Cargar imágenes para los botones
-imagen_jogar = PhotoImage(file="jugar.png")
+imagen_jogar = PhotoImage(file="jogar.png")
 imagen_sair = PhotoImage(file="exit.png")
 imagen_iniciar = PhotoImage(file="check.png")
 imagen_repetir = PhotoImage(file="repetir.png")
 imagen_check = PhotoImage(file="check.png")
-imagen_oceania = PhotoImage(file="oceania.png")
-imagen_america = PhotoImage(file="america.png")
-imagen_asia = PhotoImage(file="asia.png")
-imagen_europa = PhotoImage(file="europa.png")
-imagen_africa = PhotoImage(file="africa.png")
 
-# Crear y configurar elementos de la GUI
-bemvindo_label = tk.Label(janela, text="Bem-vindo ao\nGeoQuiz!", font=fonte_title)
+bemvindo_label = tk.Label(janela, text="\nBem-vindo ao\nGeoQuiz!", font=fonte_title)
 bemvindo_label.pack(pady=60)
 jogar_button = tk.Button(janela, image=imagen_jogar, command=lambda: mostrar_entrada_nome())
 jogar_button.pack(pady=10)
 
-nome_label = tk.Label(janela, text="\n\nQual é o seu nome?:", font=fonte_texto)
+nome_label = tk.Label(janela, text="\n\nQual é o seu nome?:", font=fonte_perguntas)
 nome_entry = tk.Entry(janela, font=fonte_texto)
 iniciar_button = tk.Button(janela, image=imagen_iniciar, command=lambda: mostrar_selecionar_continente())
 
-continente_label = tk.Label(janela, text="Selecione o continente:", font=fonte_texto)
+continente_label = tk.Label(janela, text="Selecione o continente:", font=fonte_perguntas)
 continente_botoes = [
-    tk.Button(janela, image=imagen_europa, command=lambda: selecionar_continente("europa")),
-    tk.Label(janela, text="Europa", font=fonte_texto),
-    tk.Button(janela, image=imagen_america, command=lambda: selecionar_continente("americas")),
-    tk.Label(janela, text="Americas", font=fonte_texto),
-    tk.Button(janela, image=imagen_asia, command=lambda: selecionar_continente("asiaticas")),
-    tk.Label(janela, text="Ásia", font=fonte_texto),
-    tk.Button(janela, image=imagen_africa, command=lambda: selecionar_continente("africa")),
-    tk.Label(janela, text="África", font=fonte_texto),
-    tk.Button(janela, image=imagen_oceania, command=lambda: selecionar_continente("oceania")),
-    tk.Label(janela, text="Oceania", font=fonte_texto),
+    tk.Button(janela, text="Europa", font=fonte_texto, command=lambda: selecionar_continente("europa")),
+    tk.Button(janela, text="Americas", font=fonte_texto, command=lambda: selecionar_continente("americas")),
+    tk.Button(janela, text="Ásia", font=fonte_texto, command=lambda: selecionar_continente("asiaticas")),
+    tk.Button(janela, text="Africa", font=fonte_texto, command=lambda: selecionar_continente("africa")),
+    tk.Button(janela, text="Oceania", font=fonte_texto, command=lambda: selecionar_continente("oceania")),
     tk.Button(janela, text="Todos", font=fonte_texto, command=lambda: selecionar_continente("todos"))
 ]
 
@@ -103,36 +88,18 @@ def mostrar_selecionar_continente():
     iniciar_button.pack_forget()
 
     continente_label.pack(pady=10)
-
-    # Calcular el punto medio de la lista de botones
-    midpoint = len(continente_botoes) // 2
-
-    # Dividir la lista de botones en dos partes
-    top_botoes = continente_botoes[:midpoint]
-    bottom_botoes = continente_botoes[midpoint:]
-
-    # Empaquetar los botones superiores
-    for i in range(0, len(top_botoes), 2):
-        top_botoes[i].pack(side=tk.LEFT, padx=5)
-        if i + 1 < len(top_botoes):  # Verificar si el índice está dentro del rango
-            top_botoes[i+1].pack(side=tk.LEFT, padx=5)
-
-    # Empaquetar los botones inferiores
-    for i in range(0, len(bottom_botoes), 2):
-        bottom_botoes[i].pack(side=tk.LEFT, padx=5)
-        if i + 1 < len(bottom_botoes):  # Verificar si el índice está dentro del rango
-            bottom_botoes[i+1].pack(side=tk.LEFT, padx=5)
+    for botao in continente_botoes:
+        botao.pack(pady=5)
 
 def selecionar_continente(continente):
     global continente_selecionado
     continente_selecionado = continente
 
-
     continente_label.pack_forget()
     for botao in continente_botoes:
-        botao.grid_forget()
+        botao.pack_forget()
 
-    perguntas_label = tk.Label(janela, text="\n\nQuantas perguntas deseja responder nesta volta?:", font=fonte_texto)
+    perguntas_label = tk.Label(janela, text="\n\nQuantas perguntas deseja\nresponder nesta volta?:", font=fonte_perguntas)
     perguntas_label.pack(pady=10)
     perguntas_entry = tk.Entry(janela, font=fonte_texto)
     perguntas_entry.pack(pady=5)
@@ -158,7 +125,7 @@ def confirmar_perguntas(perguntas_entry, perguntas_label, confirmar_button):
     perguntas_restantes = nroPerguntas
 
     result_label.config(text=f"Instruções:\nTem 4 opções para cada pergunta, 1 é verdadeira.\nSe a sua resposta estiver correta você somará 100 pontos.\nBoa sorte.")
-   
+    
     pergunta_label.pack(pady=20)
     for botao in botoes_opcoes:
         botao.pack(pady=5)
@@ -190,7 +157,7 @@ def obter_pais():
 def mostrar_pergunta(pais):
     global capital_correta
 
-    pergunta_label.config(text=f"Restam {perguntas_restantes} de {nroPerguntas}º perguntas.\n\nQual é a capital de {pais}?")
+    pergunta_label.config(text=f"Restam {perguntas_restantes} de {nroPerguntas} perguntas.\n\nQual é a capital de {pais}?")
     opcoes = obter_opcoes(capital_correta)
 
     for i, opcao in enumerate(opcoes):
@@ -203,10 +170,10 @@ def verificar_resposta(index):
 
     if resposta_ut == capital_correta:
         pontos_totais += 100
-        result_label.config(text=f"Muito bom {nome}! Resposta correta!\nVocê ganhou 100 pontos.\nTotal de pontos: {pontos_totais}")
+        result_label.config(text=f"Correto {nome}!\nVocê ganhou 100 pontos.\nTotal de pontos: {pontos_totais}", fg="green")
     else:
-        result_label.config(text=f"Resposta incorreta.\nA resposta correta é: {capital_correta}.\nTotal de pontos: {pontos_totais}")
-
+        result_label.config(text=f"Incorrecto.\nA resposta correta é: {capital_correta}.\nTotal de pontos: {pontos_totais}", fg="red")
+    
     perguntas_restantes -= 1
     if perguntas_restantes > 0:
         obter_pais()
@@ -225,7 +192,7 @@ def obter_opcoes(capital_correta):
     return opcoes
 
 def finalizar_jogo():
-    result_label.config(text=f"\n\n\nMuito obrigado {nome} por jogar GeoQuiz.\nNesta rodada de {nroPerguntas} perguntas\nSua pontuação final é: {pontos_totais} pontos.\n\nGostaria de jogar novamente?")
+    result_label.config(text=f"\n\n\nMuito obrigado {nome} por jogar GeoQuiz.\nNesta rodada de {nroPerguntas} perguntas\nSua pontuação final é: {pontos_totais} pontos.\n\nGostaria de jogar novamente?", fg="black")
     pergunta_label.pack_forget()
     for botao in botoes_opcoes:
         botao.pack_forget()
@@ -250,8 +217,5 @@ def reiniciar_jogo():
     jogar_button.pack(pady=20)
     botao_jogar_novamente.pack_forget()
 
-# Iniciar el loop principal de la GUI
 janela.mainloop()
-
-# Cerrar la conexión con la base de datos
 con.close()
